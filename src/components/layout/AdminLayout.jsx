@@ -57,7 +57,7 @@ export const AdminLayout = (props) => {
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-0" : "ml-0"}`}>
         <header className="h-16 border-b w-full flex justify-between items-center px-4">
-          <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+          <Button onClick={toggleSidebar} className=" sm:hidden" variant="ghost" size="icon">
             <IoMenu className="h-6 w-6" />
           </Button>
 
@@ -79,7 +79,7 @@ export const AdminLayout = (props) => {
         </header>
 
         <main className="flex flex-col p-4">
-          <div className="flex justify-between items-center pb-4 border-b mb-8">
+          <div className="flex justify-between items-start pb-4 border-b mb-8 flex-col sm:flex-row">
             <div>
               <h1 className="font-bold text-4xl">{title}</h1>
               <p className="text-muted-foreground">{description}</p>
