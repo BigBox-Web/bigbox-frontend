@@ -4,11 +4,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { axiosInstance } from "@/lib/axios";
 
 const loginFormSchema = z.object({
   username: z
@@ -35,6 +36,15 @@ const LoginPage = () => {
     alert(`Username: ${values.username} | Password: ${values.password}`);
   };
 
+  const fetchUsers = async () => {
+    try {
+      const response = await axiosInstance.get("/users");
+      console.log(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <main className="px-4 container mx-auto py-8 flex flex-col justify-center items-center h-full">
       <Form {...form}>
@@ -42,7 +52,7 @@ const LoginPage = () => {
           <Card>
             <CardHeader>
               <CardTitle>
-                <img src="/logo-bigbox.svg" alt="BigBox" width={300} className="mx-auto" />
+                <img src="bigbox.svg" alt="BigBox" width={300} className="mx-auto" />
                 <h1>Login</h1>
                 <p className="text-muted-foreground text-sm font-normal mt-3">Please enter your credentials to access your account</p>
               </CardTitle>

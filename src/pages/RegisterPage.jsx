@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 
 const registerFormSchema = z
@@ -63,7 +63,7 @@ const RegisterPage = () => {
           <Card>
             <CardHeader>
               <CardTitle>
-                <img src="/logo-bigbox.svg" alt="BigBox" width={300} className="mx-auto" />
+                <img src="bigbox.svg" alt="BigBox" width={300} className="mx-auto" />
                 <h1>Register</h1>
                 <p className="text-muted-foreground text-sm font-normal mt-3">Create an account to start your journey with us</p>
               </CardTitle>
