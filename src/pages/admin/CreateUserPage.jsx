@@ -7,6 +7,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { axiosInstance } from "@/lib/axios";
+import { Toaster, toast } from "react-hot-toast";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const createFormSchema = z
   .object({
@@ -41,6 +45,9 @@ const createFormSchema = z
   });
 
 const CreateUserPage = () => {
+  const [userIsLoading, setUserIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const form = useForm({
     defaultValues: {
       role: "",
@@ -55,8 +62,30 @@ const CreateUserPage = () => {
     reValidateMode: "onSubmit",
   });
 
-  const handleCreateUser = (values) => {
-    console.log(values);
+  const handleCreateUser = async (values) => {
+    try {
+      setUserIsLoading(true);
+
+      await axiosInstance.post("/users", {
+        role: values.role,
+        fullname: values.fullname,
+        email: values.email,
+        phone_number: values.phone_number,
+        username: values.username,
+        password: values.password,
+      });
+
+      toast.success("User created successfully");
+      form.reset();
+      setTimeout(() => {
+        navigate("/admin/users");
+      }, 2000);
+    } catch (err) {
+      toast.error("Failed to create user. Please try again");
+      console.log(err);
+    } finally {
+      setUserIsLoading(false);
+    }
   };
 
   return (
@@ -194,12 +223,17 @@ const CreateUserPage = () => {
             </CardContent>
             <CardFooter>
               <div className="flex flex-col space-y-4 w-full">
-                <Button type="submit">Create New User</Button>
+                <Button disabled={userIsLoading} type="submit">
+                  {userIsLoading ? "Creating User..." : "Create New User"}
+                </Button>
               </div>
             </CardFooter>
           </Card>
         </form>
       </Form>
+
+      {/* Toaster */}
+      <Toaster position="top-center" reverseOrder={false} />
     </AdminLayout>
   );
 };
