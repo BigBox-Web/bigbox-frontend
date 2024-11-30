@@ -10,6 +10,8 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { axiosInstance } from "@/lib/axios";
+import React from "react";
+import Spinner from "@/components/ui/spinner";
 
 const loginFormSchema = z.object({
   username: z
@@ -33,7 +35,7 @@ const LoginPage = () => {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleLogin = (values) => {
-    alert(`Username: ${values.username} | Password: ${values.password}`);
+    console.log(values);
   };
 
   const fetchUsers = async () => {

@@ -9,11 +9,16 @@ import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/axios";
 import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { useSearchParams } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import Spinner from "@/components/ui/spinner";
 
 const UserManagementPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [users, setUsers] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const [userName, setUserName] = useState("");
+  const [userIsLoading, setUserIsLoading] = useState(false);
 
   const handleNextPage = () => {
     searchParams.set("page", Number(searchParams.get("page")) + 1);
@@ -27,12 +32,27 @@ const UserManagementPage = () => {
     setSearchParams(searchParams);
   };
 
+  const searchUser = () => {
+    if (userName) {
+      searchParams.set("search", userName);
+
+      setSearchParams(searchParams);
+    } else {
+      searchParams.delete("search");
+
+      setSearchParams(searchParams);
+    }
+  };
+
   const fetchUsers = async () => {
     try {
+      setUserIsLoading(true);
+
       const response = await axiosInstance.get("/users", {
         params: {
           _per_page: 5,
           _page: Number(searchParams.get("page")),
+          fullname: searchParams.get("search"),
         },
       });
 
@@ -40,6 +60,8 @@ const UserManagementPage = () => {
       setUsers(response.data.data);
     } catch (err) {
       console.log(err);
+    } finally {
+      setUserIsLoading(false);
     }
   };
 
@@ -48,7 +70,7 @@ const UserManagementPage = () => {
     if (searchParams.get("page")) {
       fetchUsers();
     }
-  }, [searchParams.get("page")]);
+  }, [searchParams.get("page"), searchParams.get("search")]);
 
   // Mount
   useEffect(() => {
@@ -67,15 +89,24 @@ const UserManagementPage = () => {
       description="Managing our users"
       rightSection={
         <div className="flex gap-2 mt-4">
-          <Link to="/admin/products/create">
+          <Link to="/admin/users/create">
             <Button>
               <IoAdd className="h-6 w-6 mr-2" />
-              Add Product
+              Add User
             </Button>
           </Link>
         </div>
       }
     >
+      {/* Search */}
+      <div className="mb-8">
+        <Label>Search User Name</Label>
+        <div className="flex gap-4">
+          <Input value={userName} onChange={(e) => setUserName(e.target.value)} className="w-[250px] lg:w-[400px]" placeholder="Search users..." />
+          <Button onClick={searchUser}>Search</Button>
+        </div>
+      </div>
+
       {/* Table */}
       <Table className="p-4 border rounded-md">
         <TableHeader>
@@ -83,37 +114,45 @@ const UserManagementPage = () => {
             <TableHead></TableHead>
             <TableHead>ID</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead>Fullname</TableHead>
+            <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone Number</TableHead>
             <TableHead>Username</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
-          {users.map((user) => {
-            return (
-              <TableRow>
-                <TableCell>
-                  <Checkbox />
-                </TableCell>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>{user.fullname}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.phone_number}</TableCell>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>
-                  <Link>
-                    <Button variant="ghost" size="icon">
-                      <Edit className="w-6 h-6" />
-                    </Button>
-                  </Link>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
+        {userIsLoading ? (
+          <TableRow>
+            <TableCell colSpan={8}>
+              <Spinner />
+            </TableCell>
+          </TableRow>
+        ) : (
+          <TableBody>
+            {users.map((user) => {
+              return (
+                <TableRow>
+                  <TableCell>
+                    <Checkbox />
+                  </TableCell>
+                  <TableCell>{user.id}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.fullname}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phone_number}</TableCell>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell>
+                    <Link>
+                      <Button variant="ghost" size="icon">
+                        <Edit className="w-6 h-6" />
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        )}
       </Table>
 
       {/* Pagination */}

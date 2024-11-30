@@ -1,14 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import z from "zod";
+import { AdminLayout } from "@/components/layout/AdminLayout";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const registerFormSchema = z
+const createFormSchema = z
   .object({
+    role: z.string().nonempty("Please select a role"),
     fullname: z
       .string()
       .min(3, "Your fullname is too short")
@@ -38,9 +40,10 @@ const registerFormSchema = z
     }
   });
 
-const RegisterPage = () => {
+const CreateUserPage = () => {
   const form = useForm({
     defaultValues: {
+      role: "",
       fullname: "",
       email: "",
       phone_number: "",
@@ -48,27 +51,57 @@ const RegisterPage = () => {
       password: "",
       repeatPassword: "",
     },
-    resolver: zodResolver(registerFormSchema),
+    resolver: zodResolver(createFormSchema),
     reValidateMode: "onSubmit",
   });
 
-  const handleRegister = (values) => {
+  const handleCreateUser = (values) => {
     console.log(values);
   };
 
   return (
-    <main className="px-4 container mx-auto py-8 flex flex-col justify-center items-center h-full">
+    <AdminLayout title="Create Users" description="Add new users">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleRegister)} className="w-full max-w-[540px]">
+        <form onSubmit={form.handleSubmit(handleCreateUser)} className="w-full max-w-[540px]">
           <Card>
             <CardHeader>
               <CardTitle>
-                <img src="bigbox.svg" alt="BigBox" width={300} className="mx-auto" />
-                <h1>Register</h1>
-                <p className="text-muted-foreground text-sm font-normal mt-3">Create an account to start your journey with us</p>
+                <h1>Add a new user</h1>
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="role">Role</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
+                        <SelectTrigger id="role">
+                          <SelectValue placeholder="Select Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="frontend">Frontend</SelectItem>
+                          <SelectItem value="backend">Backend</SelectItem>
+                          <SelectItem value="uiux">UIUX</SelectItem>
+                          <SelectItem value="devops">DevOps</SelectItem>
+                          <SelectItem value="datascientist">DataScientist</SelectItem>
+                          <SelectItem value="dataanalyst">DataAnalyst</SelectItem>
+                          <SelectItem value="itsupport">ITSupport</SelectItem>
+                          <SelectItem value="productmanager">ProductManager</SelectItem>
+                          <SelectItem value="projectmanager">ProjectManager</SelectItem>
+                          <SelectItem value="user">User</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormDescription>Role is required</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="fullname"
@@ -161,19 +194,14 @@ const RegisterPage = () => {
             </CardContent>
             <CardFooter>
               <div className="flex flex-col space-y-4 w-full">
-                <Button type="submit">Register</Button>
-                <Link to="/login">
-                  <Button variant="link" className="w-full">
-                    Login
-                  </Button>
-                </Link>
+                <Button type="submit">Create New User</Button>
               </div>
             </CardFooter>
           </Card>
         </form>
       </Form>
-    </main>
+    </AdminLayout>
   );
 };
 
-export default RegisterPage;
+export default CreateUserPage;
