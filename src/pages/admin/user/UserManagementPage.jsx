@@ -19,6 +19,7 @@ const UserManagementPage = () => {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [userName, setUserName] = useState("");
   const [userIsLoading, setUserIsLoading] = useState(false);
+  const [lastPage, setLastPage] = useState(null);
 
   const handleNextPage = () => {
     searchParams.set("page", Number(searchParams.get("page")) + 1);
@@ -55,9 +56,10 @@ const UserManagementPage = () => {
           fullname: searchParams.get("search"),
         },
       });
-
+      console.log(response.data);
       setHasNextPage(Boolean(response.data.next));
       setUsers(response.data.data);
+      setLastPage(response.data.last);
     } catch (err) {
       console.log(err);
     } finally {
@@ -72,16 +74,16 @@ const UserManagementPage = () => {
     }
   }, [searchParams.get("page"), searchParams.get("search")]);
 
-  // Mount
+  // Mount & Update
   useEffect(() => {
     if (!searchParams.get("page") || Number(searchParams.get("page")) < 1) {
       searchParams.set("page", 1);
       setSearchParams(searchParams);
-    } else if (Number(searchParams.get("page")) > 4) {
-      searchParams.set("page", 4);
+    } else if (lastPage && Number(searchParams.get("page")) > lastPage) {
+      searchParams.set("page", lastPage);
       setSearchParams(searchParams);
     }
-  }, []);
+  }, [lastPage]);
 
   return (
     <AdminLayout
@@ -142,7 +144,7 @@ const UserManagementPage = () => {
                   <TableCell>{user.phone_number}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>
-                    <Link>
+                    <Link to={"/admin/users/edit/" + user.id}>
                       <Button variant="ghost" size="icon">
                         <Edit className="w-6 h-6" />
                       </Button>
