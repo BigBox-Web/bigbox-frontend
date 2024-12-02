@@ -81,7 +81,7 @@ const EditUserPage = () => {
     try {
       setUserIsLoading(true);
 
-      await axiosInstance.post("/users", {
+      await axiosInstance.patch("/users/" + params.userId, {
         role: values.role,
         fullname: values.fullname,
         email: values.email,
@@ -90,12 +90,12 @@ const EditUserPage = () => {
         password: values.password,
       });
 
-      toast.success("User created successfully");
+      toast.success("User edited successfully");
       setTimeout(() => {
         navigate("/admin/users");
       }, 2000);
     } catch (err) {
-      toast.error("Failed to create user. Please try again");
+      toast.error("Failed to edit user. Please try again");
       console.log(err);
     } finally {
       setUserIsLoading(false);

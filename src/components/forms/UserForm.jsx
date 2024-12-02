@@ -28,17 +28,17 @@ export const UserForm = (props) => {
                         <SelectValue placeholder="Select Role" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="frontend">Frontend</SelectItem>
-                        <SelectItem value="backend">Backend</SelectItem>
-                        <SelectItem value="uiux">UIUX</SelectItem>
-                        <SelectItem value="devops">DevOps</SelectItem>
-                        <SelectItem value="datascientist">DataScientist</SelectItem>
-                        <SelectItem value="dataanalyst">DataAnalyst</SelectItem>
-                        <SelectItem value="itsupport">ITSupport</SelectItem>
-                        <SelectItem value="productmanager">ProductManager</SelectItem>
-                        <SelectItem value="projectmanager">ProjectManager</SelectItem>
-                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Frontend">Frontend</SelectItem>
+                        <SelectItem value="Backend">Backend</SelectItem>
+                        <SelectItem value="UIUX">UIUX</SelectItem>
+                        <SelectItem value="DevOps">DevOps</SelectItem>
+                        <SelectItem value="DataScientist">DataScientist</SelectItem>
+                        <SelectItem value="DataAnalyst">DataAnalyst</SelectItem>
+                        <SelectItem value="ITSupport">ITSupport</SelectItem>
+                        <SelectItem value="ProductManager">ProductManager</SelectItem>
+                        <SelectItem value="ProjectManager">ProjectManager</SelectItem>
+                        <SelectItem value="User">User</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -141,7 +141,7 @@ export const UserForm = (props) => {
           <CardFooter>
             <div className="flex flex-col space-y-4 w-full">
               <Button disabled={state} type="submit">
-                {state ? "Creating User..." : "Submit"}
+                {state ? "Processing..." : "Submit"}
               </Button>
             </div>
           </CardFooter>
