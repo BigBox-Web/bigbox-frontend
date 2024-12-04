@@ -8,10 +8,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { axiosInstance } from "@/lib/axios";
 import React from "react";
-import Spinner from "@/components/ui/spinner";
+import { Toaster, toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
 
 const loginFormSchema = z.object({
   username: z
@@ -23,6 +24,11 @@ const loginFormSchema = z.object({
 });
 
 const LoginPage = () => {
+  const [isChecked, setIsChecked] = useState(false);
+  const [loginIsLoading, setLoginIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const form = useForm({
     defaultValues: {
       username: "",
@@ -32,23 +38,44 @@ const LoginPage = () => {
     reValidateMode: "onSubmit",
   });
 
-  const [isChecked, setIsChecked] = useState(false);
-
-  const handleLogin = (values) => {
-    console.log(values);
-  };
-
-  const fetchUsers = async () => {
+  const handleLogin = async (values) => {
     try {
-      const response = await axiosInstance.get("/users");
-      console.log(response.data);
+      setLoginIsLoading(true);
+
+      const response = await axiosInstance.get("/users", {
+        params: {
+          username: values.username,
+          password: values.password,
+        },
+      });
+
+      toast.success("User login successfully");
+      form.reset();
+      setTimeout(() => {
+        navigate("/admin/users");
+      }, 2000);
+
+      dispatch({
+        type: "USER_LOGIN",
+        payload: {
+          id: response.data[0].id,
+          fullname: response.data[0].fullname,
+        },
+      });
     } catch (err) {
+      toast.error("Failed to login user. Please try again");
       console.log(err);
+    } finally {
+      setLoginIsLoading(false);
     }
   };
 
   return (
     <main className="px-4 container mx-auto py-8 flex flex-col justify-center items-center h-full">
+      {/* Toaster */}
+      <Toaster position="top-center" reverseOrder={false} />
+
+      {/* Form */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleLogin)} className="w-full max-w-[540px]">
           <Card>
@@ -97,7 +124,9 @@ const LoginPage = () => {
             </CardContent>
             <CardFooter>
               <div className="flex flex-col space-y-4 w-full">
-                <Button type="submit">Login</Button>
+                <Button disabled={loginIsLoading} type="submit">
+                  {loginIsLoading ? "Processing..." : "Login"}
+                </Button>
                 <Link to="/register">
                   <Button variant="link" className="w-full">
                     Register

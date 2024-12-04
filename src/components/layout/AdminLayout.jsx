@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const SidebarItem = ({ children }) => (
   <Button variant="ghost" size="lg" className="w-full rounded-none justify-start">
@@ -12,6 +13,7 @@ const SidebarItem = ({ children }) => (
 
 export const AdminLayout = ({ title, description, rightSection, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const userSelector = useSelector((state) => state.user);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -58,20 +60,24 @@ export const AdminLayout = ({ title, description, rightSection, children }) => {
           </Button>
 
           {/* Avatar with dropdown menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="cursor-pointer absolute right-4">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => alert("Edit Profile")}>Edit Profile</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => alert("Change Password")}>Change Password</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2 lg:ml-auto absolute top-2 right-4 sm:relative sm:top-0 sm:right-0">
+            <p className="text-sm sm:block">
+              Hello, <span className="font-bold">{userSelector.fullname}</span>
+            </p>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="cursor-pointer">
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="bottom" className="w-48 mt-2">
+                <DropdownMenuItem onClick={() => alert("Edit Profile")}>Edit Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => alert("Change Password")}>Change Password</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </header>
 
         {/* Main Section */}

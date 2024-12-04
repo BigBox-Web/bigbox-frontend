@@ -5,7 +5,10 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { axiosInstance } from "@/lib/axios";
+import { useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
 
 const registerFormSchema = z
   .object({
@@ -39,8 +42,12 @@ const registerFormSchema = z
   });
 
 const RegisterPage = () => {
+  const [registerIsLoading, setRegisterIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const form = useForm({
     defaultValues: {
+      role: "User",
       fullname: "",
       email: "",
       phone_number: "",
@@ -52,12 +59,38 @@ const RegisterPage = () => {
     reValidateMode: "onSubmit",
   });
 
-  const handleRegister = (values) => {
-    console.log(values);
+  const handleRegister = async (values) => {
+    try {
+      setRegisterIsLoading(true);
+
+      await axiosInstance.post("/users", {
+        role: "User",
+        fullname: values.fullname,
+        email: values.email,
+        phone_number: values.phone_number,
+        username: values.username,
+        password: values.password,
+      });
+
+      toast.success("User register successfully");
+      form.reset();
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (err) {
+      toast.error("Failed to register user. Please try again");
+      console.log(err);
+    } finally {
+      setRegisterIsLoading(false);
+    }
   };
 
   return (
     <main className="px-4 container mx-auto py-8 flex flex-col justify-center items-center h-full">
+      {/* Toaster */}
+      <Toaster position="top-center" reverseOrder={false} />
+
+      {/* Form */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleRegister)} className="w-full max-w-[540px]">
           <Card>
@@ -161,7 +194,9 @@ const RegisterPage = () => {
             </CardContent>
             <CardFooter>
               <div className="flex flex-col space-y-4 w-full">
-                <Button type="submit">Register</Button>
+                <Button disabled={registerIsLoading} type="submit">
+                  {registerIsLoading ? "Processing..." : "Register"}
+                </Button>
                 <Link to="/login">
                   <Button variant="link" className="w-full">
                     Login

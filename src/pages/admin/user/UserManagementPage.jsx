@@ -167,7 +167,7 @@ const UserManagementPage = () => {
 
       {/* Search */}
       <div className="mb-8">
-        <Label>Search User Name</Label>
+        <Label>Search User Fullname</Label>
         <div className="flex gap-4">
           <Input value={userName} onChange={(e) => setUserName(e.target.value)} className="w-[250px] lg:w-[400px]" placeholder="Search users..." />
           <Button onClick={searchUser}>Search</Button>
@@ -181,7 +181,7 @@ const UserManagementPage = () => {
             <TableHead></TableHead>
             <TableHead>ID</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead>Name</TableHead>
+            <TableHead>Fullname</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Phone Number</TableHead>
             <TableHead>Username</TableHead>
