@@ -5,8 +5,45 @@ import RegisterPage from "./pages/RegisterPage";
 import UserManagementPage from "./pages/admin/user/UserManagementPage";
 import CreateUserPage from "./pages/admin/user/CreateUserPage";
 import EditUserPage from "./pages/admin/user/EditUserPage";
+import { useDispatch } from "react-redux";
+import { axiosInstance } from "./lib/axios";
+import { useEffect, useState } from "react";
 
 function App() {
+  const dispatch = useDispatch();
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  const hydrateAuth = async () => {
+    try {
+      const currentUser = localStorage.getItem("current-user");
+
+      if (!currentUser) return;
+
+      const userResponse = await axiosInstance.get("/users/" + currentUser);
+
+      dispatch({
+        type: "USER_LOGIN",
+        payload: {
+          id: userResponse.data.id,
+          role: userResponse.data.role,
+          fullname: userResponse.data.fullname,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsHydrated(true);
+    }
+  };
+
+  useEffect(() => {
+    hydrateAuth();
+  }, []);
+
+  if (!isHydrated) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <Routes>

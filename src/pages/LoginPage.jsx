@@ -10,7 +10,6 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { axiosInstance } from "@/lib/axios";
-import React from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 
@@ -42,12 +41,16 @@ const LoginPage = () => {
     try {
       setLoginIsLoading(true);
 
-      const response = await axiosInstance.get("/users", {
+      const userResponse = await axiosInstance.get("/users", {
         params: {
           username: values.username,
-          password: values.password,
         },
       });
+
+      if (!userResponse.data.length || userResponse.data[0].password !== values.password) {
+        toast.error("Invalid credentials");
+        return;
+      }
 
       toast.success("User login successfully");
       form.reset();
@@ -58,10 +61,13 @@ const LoginPage = () => {
       dispatch({
         type: "USER_LOGIN",
         payload: {
-          id: response.data[0].id,
-          fullname: response.data[0].fullname,
+          id: userResponse.data[0].id,
+          role: userResponse.data[0].role,
+          fullname: userResponse.data[0].fullname,
         },
       });
+
+      localStorage.setItem("current-user", userResponse.data[0].id);
     } catch (err) {
       toast.error("Failed to login user. Please try again");
       console.log(err);
@@ -127,11 +133,16 @@ const LoginPage = () => {
                 <Button disabled={loginIsLoading} type="submit">
                   {loginIsLoading ? "Processing..." : "Login"}
                 </Button>
-                <Link to="/register">
-                  <Button variant="link" className="w-full">
-                    Register
-                  </Button>
-                </Link>
+                <div className="text-center">
+                  <p className="text-sm">
+                    Don't have an account?
+                    <Link to="/register">
+                      <Button variant="link" className="p-1">
+                        Register
+                      </Button>
+                    </Link>
+                  </p>
+                </div>
               </div>
             </CardFooter>
           </Card>

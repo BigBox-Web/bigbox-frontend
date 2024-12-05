@@ -70,8 +70,8 @@ const EditUserPage = () => {
 
   const fetchUser = async () => {
     try {
-      const response = await axiosInstance.get("/users/" + params.userId);
-      setUser(response.data);
+      const userResponse = await axiosInstance.get("/users/" + params.userId);
+      setUser(userResponse.data);
     } catch (err) {
       console.log(err);
     }

@@ -62,6 +62,28 @@ const CreateUserPage = () => {
     try {
       setUserIsLoading(true);
 
+      const usernameResponse = await axiosInstance.get("/users", {
+        params: {
+          username: values.username,
+        },
+      });
+
+      if (usernameResponse.data.length) {
+        toast.error("Username is already taken");
+        return;
+      }
+
+      const emailResponse = await axiosInstance.get("/users", {
+        params: {
+          email: values.email,
+        },
+      });
+
+      if (emailResponse.data.length) {
+        toast.error("Email is already taken");
+        return;
+      }
+
       await axiosInstance.post("/users", {
         role: values.role,
         fullname: values.fullname,

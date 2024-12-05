@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { axiosInstance } from "@/lib/axios";
-import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 
 const registerFormSchema = z
@@ -62,6 +62,28 @@ const RegisterPage = () => {
   const handleRegister = async (values) => {
     try {
       setRegisterIsLoading(true);
+
+      const usernameResponse = await axiosInstance.get("/users", {
+        params: {
+          username: values.username,
+        },
+      });
+
+      if (usernameResponse.data.length) {
+        toast.error("Username is already taken");
+        return;
+      }
+
+      const emailResponse = await axiosInstance.get("/users", {
+        params: {
+          email: values.email,
+        },
+      });
+
+      if (emailResponse.data.length) {
+        toast.error("Email is already taken");
+        return;
+      }
 
       await axiosInstance.post("/users", {
         role: "User",
@@ -197,11 +219,16 @@ const RegisterPage = () => {
                 <Button disabled={registerIsLoading} type="submit">
                   {registerIsLoading ? "Processing..." : "Register"}
                 </Button>
-                <Link to="/login">
-                  <Button variant="link" className="w-full">
-                    Login
-                  </Button>
-                </Link>
+                <div className="text-center">
+                  <p className="text-sm">
+                    Already have an account?
+                    <Link to="/login">
+                      <Button variant="link" className="p-1">
+                        Login
+                      </Button>
+                    </Link>
+                  </p>
+                </div>
               </div>
             </CardFooter>
           </Card>

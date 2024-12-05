@@ -52,7 +52,7 @@ const UserManagementPage = () => {
     try {
       setUserIsLoading(true);
 
-      const response = await axiosInstance.get("/users", {
+      const userResponse = await axiosInstance.get("/users", {
         params: {
           _per_page: 5,
           _page: Number(searchParams.get("page")),
@@ -60,9 +60,9 @@ const UserManagementPage = () => {
         },
       });
 
-      setHasNextPage(Boolean(response.data.next));
-      setUsers(response.data.data);
-      setLastPage(response.data.last);
+      setHasNextPage(Boolean(userResponse.data.next));
+      setUsers(userResponse.data.data);
+      setLastPage(userResponse.data.last);
     } catch (err) {
       console.log(err);
     } finally {

@@ -1,9 +1,10 @@
-import { IoTicket, IoPeople, IoShieldCheckmarkSharp, IoMenu } from "react-icons/io5";
+import { IoTicket, IoPeople, IoShieldCheckmarkSharp, IoMenu, IoPersonOutline, IoKeyOutline, IoLogOutOutline } from "react-icons/io5";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const SidebarItem = ({ children }) => (
   <Button variant="ghost" size="lg" className="w-full rounded-none justify-start">
@@ -14,11 +15,19 @@ const SidebarItem = ({ children }) => (
 export const AdminLayout = ({ title, description, rightSection, children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const userSelector = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleLogout = () => {
-    alert("Logging out...");
+    localStorage.removeItem("current-user");
+
+    dispatch({
+      type: "USER_LOGOUT",
+    });
+
+    navigate("/login");
   };
 
   return (
@@ -60,10 +69,8 @@ export const AdminLayout = ({ title, description, rightSection, children }) => {
           </Button>
 
           {/* Avatar with dropdown menu */}
-          <div className="flex items-center gap-2 lg:ml-auto absolute top-2 right-4 sm:relative sm:top-0 sm:right-0">
-            <p className="text-sm sm:block">
-              Hello, <span className="font-bold">{userSelector.fullname}</span>
-            </p>
+          <div className="flex items-center gap-2 lg:ml-auto absolute top-2 right-4 md:absolute md:top-2 md:right-4 sm:relative sm:top-0 sm:right-0">
+            <p className="text-sm sm:block">{`${userSelector.fullname} (${userSelector.role})`}</p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="cursor-pointer">
@@ -72,9 +79,18 @@ export const AdminLayout = ({ title, description, rightSection, children }) => {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom" className="w-48 mt-2">
-                <DropdownMenuItem onClick={() => alert("Edit Profile")}>Edit Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => alert("Change Password")}>Change Password</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => alert("Edit Profile")}>
+                  <IoPersonOutline />
+                  Edit Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => alert("Change Password")}>
+                  <IoKeyOutline />
+                  Change Password
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <IoLogOutOutline />
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
